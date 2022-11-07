@@ -22,7 +22,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-Cart.BLL.Class1 test = new Cart.BLL.Class1();
-test.Testas();
-
 app.Run();
