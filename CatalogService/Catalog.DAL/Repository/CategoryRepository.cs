@@ -1,48 +1,55 @@
-﻿using Dapper;
+﻿using Catalog.BLL.Entities;
+using Catalog.BLL.Interfaces.Repository;
+using Dapper;
 using Microsoft.Data.Sqlite;
 
 namespace Catalog.DAL.Repository
 {
-    public class CatalogRepository
+    public class CategoryRepository : ICategoryRepository
     {
-        const string connString = @"Data Source=C:\Users\Karolis_Rekasius\Desktop\Advanced .net\CatalogService\CatalogDb\catalog.db";
+        private readonly string _connString;
 
-        public Models.Catalog Get(long id)
+        public CategoryRepository(string connString)
         {
-            using var connection = new SqliteConnection(connString);
+            _connString = connString;
+        }
+
+        public Category Get(long id)
+        {
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var sql = @"
                 SELECT id, name, image, parent_category parentCategory
-                FROM catalogs
+                FROM categories
                 WHERE id = @id";
-            var product = connection.QuerySingle<Models.Catalog>(sql, new { id });
+            var categories = connection.QuerySingle<Category>(sql, new { id });
 
-            return product;
+            return categories;
         }
 
-        public List<Models.Catalog> GetAll(long? parentCategoryId = null)
+        public List<Category> GetAll(long? parentCategoryId = null)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var command = connection.CreateCommand();
             var sql = @$"
                 SELECT id, name, image, parent_category parentCategory
-                FROM catalogs
-                WHERE parentCategory {(parentCategoryId is null ?  "is NULL" : "= @parentCategory")}";
-            var product = connection.Query<Models.Catalog>(sql, new { parentCategory = parentCategoryId });
+                FROM categories
+                {(parentCategoryId is null ?  "" : "WHERE parentCategory = @parentCategory")}";
+            var categories = connection.Query<Category>(sql, new { parentCategory = parentCategoryId });
 
-            return product.ToList();
+            return categories.ToList();
         }
 
-        public long Add(Models.Catalog catalog)
+        public long Add(Category catalog)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var sql = @"
-                INSERT INTO catalogs (name, image, parent_category)
+                INSERT INTO categories (name, image, parent_category)
                 VALUES (@name, @image, @parentCategory)
                 RETURNING Id";
             var parameters = new
@@ -62,14 +69,14 @@ namespace Catalog.DAL.Repository
             }
         }
 
-        public long Update(Models.Catalog catalog)
+        public long Update(Category catalog)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var command = connection.CreateCommand();
             var sql = @"
-                UPDATE catalogs
+                UPDATE categories
                 SET name = @name, image = @image, parent_category = @parentCategory
                 WHERE id = @id";
             var parameters = new
@@ -85,11 +92,11 @@ namespace Catalog.DAL.Repository
 
         public long Delete(long id)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var command = connection.CreateCommand();
-            var sql = "DELETE FROM catalogs WHERE id = @id";
+            var sql = "DELETE FROM categories WHERE id = @id";
 
             return connection.Execute(sql, new { id });
         }

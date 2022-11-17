@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.32929.387
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogService", "CatalogService\CatalogService.csproj", "{ACCB2EDD-C9EB-4B76-8DA7-B79958DA4B2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.DAL", "Catalog.DAL\Catalog.DAL.csproj", "{A3044EC6-29B8-49F9-A206-7BC2D86DB69D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.DAL", "Catalog.DAL\Catalog.DAL.csproj", "{A3044EC6-29B8-49F9-A206-7BC2D86DB69D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.BLL", "Catalog.BLL\Catalog.BLL.csproj", "{FB9AB064-9372-42A6-A39F-8CBF40BCB860}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.BLL", "Catalog.BLL\Catalog.BLL.csproj", "{FB9AB064-9372-42A6-A39F-8CBF40BCB860}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

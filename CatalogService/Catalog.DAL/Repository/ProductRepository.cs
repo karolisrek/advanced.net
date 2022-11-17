@@ -1,29 +1,36 @@
-﻿using Dapper;
+﻿using Catalog.BLL.Entities;
+using Catalog.BLL.Interfaces.Repository;
+using Dapper;
 using Microsoft.Data.Sqlite;
 
 namespace Catalog.DAL.Repository
 {
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
-        const string connString = @"Data Source=C:\Users\Karolis_Rekasius\Desktop\Advanced .net\CatalogService\CatalogDb\catalog.db";
+        //const string connString = @"Data Source=C:\Users\Karolis_Rekasius\Desktop\Advanced .net\CatalogService\CatalogDb\catalog.db";
+        private readonly string _connString;
 
-        public Models.Product Get(long id)
+        public ProductRepository(string connString)
         {
-            using var connection = new SqliteConnection(connString);
+            _connString = connString;
+        }
+        public Product Get(long id)
+        {
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var sql = @"
                 SELECT id, image, category CategoryId, price, amount, name, description
                 FROM products
                 WHERE id = @id";
-            var product = connection.QuerySingle<Models.Product>(sql, new { id });
+            var product = connection.QuerySingle<Product>(sql, new { id });
 
             return product;
         }
 
-        public List<Models.Product> GetAll(long categoryId)
+        public List<Product> GetAll(long categoryId)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var command = connection.CreateCommand();
@@ -31,14 +38,14 @@ namespace Catalog.DAL.Repository
                 SELECT id, image, category CategoryId, price, amount, name, description
                 FROM Products
                 WHERE CategoryId = @categoryId";
-            var product = connection.Query<Models.Product>(sql, new { categoryId });
+            var product = connection.Query<Product>(sql, new { categoryId });
 
             return product.ToList();
         }
 
-        public long Add(Models.Product product)
+        public long Add(Product product)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var sql = @"
@@ -65,9 +72,9 @@ namespace Catalog.DAL.Repository
             }
         }
 
-        public long Update(Models.Product product)
+        public long Update(Product product)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var command = connection.CreateCommand();
@@ -97,7 +104,7 @@ namespace Catalog.DAL.Repository
 
         public long Delete(long id)
         {
-            using var connection = new SqliteConnection(connString);
+            using var connection = new SqliteConnection(_connString);
             connection.Open();
 
             var command = connection.CreateCommand();

@@ -1,6 +1,30 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Catalog.BLL.Interfaces.Managers;
+using Catalog.BLL.Interfaces.Repository;
+using Catalog.BLL.Managers;
+using Catalog.DAL.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
+var connString = builder.Configuration.GetConnectionString("CatalogDb");
+builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+{
+    builder
+        .RegisterType<ProductRepository>()
+        .As<IProductRepository>()
+        .WithParameter("connString", connString);
+
+    builder
+        .RegisterType<CategoryRepository>()
+        .As<ICategoryRepository>()
+        .WithParameter("connString", connString);
+
+    builder.RegisterType<ProductManager>().As<IProductManager>();
+    builder.RegisterType<CategoryManager>().As<ICategoryManager>();
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
