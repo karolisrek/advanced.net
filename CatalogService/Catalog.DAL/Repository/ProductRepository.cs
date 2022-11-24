@@ -7,7 +7,6 @@ namespace Catalog.DAL.Repository
 {
     public class ProductRepository : IProductRepository
     {
-        //const string connString = @"Data Source=C:\Users\Karolis_Rekasius\Desktop\Advanced .net\CatalogService\CatalogDb\catalog.db";
         private readonly string _connString;
 
         public ProductRepository(string connString)
@@ -28,7 +27,7 @@ namespace Catalog.DAL.Repository
             return product;
         }
 
-        public List<Product> GetAll(long categoryId)
+        public List<Product> GetAll(long offset, long limit, long? categoryId = null)
         {
             using var connection = new SqliteConnection(_connString);
             connection.Open();
@@ -37,8 +36,10 @@ namespace Catalog.DAL.Repository
             var sql = @$"
                 SELECT id, image, category CategoryId, price, amount, name, description
                 FROM Products
-                WHERE CategoryId = @categoryId";
-            var product = connection.Query<Product>(sql, new { categoryId });
+                ORDER BY id
+                {(categoryId.HasValue ? "WHERE CategoryId = @categoryId" : "")}
+                Limit @offset,@limit";
+            var product = connection.Query<Product>(sql, new { categoryId, offset, limit });
 
             return product.ToList();
         }
@@ -111,6 +112,28 @@ namespace Catalog.DAL.Repository
             var sql = "DELETE FROM products WHERE id = @id";
 
             return connection.Execute(sql, new { id });
+        }
+
+        public long GetProductCount()
+        {
+            using var connection = new SqliteConnection(_connString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            var sql = "SELECT count(1) FROM products";
+
+            return connection.QuerySingle<long>(sql);
+        }
+
+        public long DeleteForCategory(long category)
+        {
+            using var connection = new SqliteConnection(_connString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            var sql = "DELETE FROM products WHERE category = @category";
+
+            return connection.Execute(sql, new { category });
         }
     }
 }
