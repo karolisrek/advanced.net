@@ -1,3 +1,4 @@
+using Cart.BLL.BackgroundTasks;
 using Cart.BLL.Managers;
 using Cart.DAL;
 
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddTransient<CartManager>();
 builder.Services.AddTransient<CartRepository>();
+builder.Services.AddSingleton<ProductQueueListener>();
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
@@ -27,5 +29,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var queueListener = app.Services.GetService<ProductQueueListener>()!;
+queueListener.StartListnening();
 
 app.Run();

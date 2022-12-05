@@ -1,5 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Catalog.BLL.Handlers;
+using Catalog.BLL.Interfaces.Handlers;
 using Catalog.BLL.Interfaces.Managers;
 using Catalog.BLL.Interfaces.Repository;
 using Catalog.BLL.Managers;
@@ -24,6 +26,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
 
     builder.RegisterType<ProductManager>().As<IProductManager>();
     builder.RegisterType<CategoryManager>().As<ICategoryManager>();
+    builder.RegisterType<RabbitMQMessagePublisher>().As<IQueueMessagePublisher>();
 });
 
 builder.Services.AddControllers();

@@ -1,4 +1,5 @@
 ﻿using Catalog.BLL.Entities;
+using Catalog.BLL.Interfaces.Handlers;
 using Catalog.BLL.Interfaces.Managers;
 using Catalog.BLL.Interfaces.Repository;
 
@@ -7,11 +8,13 @@ namespace Catalog.BLL.Managers
     public class ProductManager : IProductManager
     {
         public IProductRepository _productRepository;
+        private readonly IQueueMessagePublisher _queueMessagePublisher;
         private const long _pageSize = 5;
 
-        public ProductManager(IProductRepository productRepository)
+        public ProductManager(IProductRepository productRepository, IQueueMessagePublisher queueMessagePublisher)
         {
             _productRepository = productRepository;
+            _queueMessagePublisher = queueMessagePublisher;
         }
 
         public IEnumerable<Product> GetAll(long? page, long? category)
@@ -39,6 +42,8 @@ namespace Catalog.BLL.Managers
         public Product Update(Product product)
         {
             _productRepository.Update(product);
+
+            _queueMessagePublisher.SendMessage(product);
 
             return product;
         }
