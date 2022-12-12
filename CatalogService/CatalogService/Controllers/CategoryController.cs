@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using Catalog.BLL.Entities;
 using Catalog.BLL.Interfaces.Managers;
 using CatalogService.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CatalogService.Controllers
 {
@@ -25,6 +26,8 @@ namespace CatalogService.Controllers
         }
 
         [HttpPost]
+
+        [Authorize(Roles = "Manager")]
         public CategoryDTO Add(Category category)
         {
             var data = _catalogManager.Add(category);
@@ -40,12 +43,14 @@ namespace CatalogService.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Manager")]
         public Category Update(Category category)
         {
             return _catalogManager.Update(category);
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Manager")]
         public void Delete(long category)
         {
             _catalogManager.Delete(category);
